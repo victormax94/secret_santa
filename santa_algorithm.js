@@ -66,5 +66,5 @@ console.log(result);
         return list.includes(0) ? undefined : 0
     }
     getPickable();
-    return picks[Math.random() * picks.length | 0]; // (| 0) same as Math.floor
-}        */                                           // (only for positive ints).
+    return picks[Math.random() * picks.length | 0]; // (| 0) same as Math.floorK
+}        */// (only for positive ints).
