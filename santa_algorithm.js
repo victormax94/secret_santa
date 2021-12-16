@@ -1,70 +1,72 @@
+const {sendEmail} = require("./sendEmail");
 
-function santaAlgorithm(blackList) {
-
-     Object.keys(blackList).forEach((key) => {
-        blackList[key].push(key)
-    })
-    console.log(blackList);
-    const emails = Object.keys(blackList)
-    console.log("tutte le email",emails);
-    // const linkedWhiteList = getWhiteList(emails,blackList)
+// input [{email:"email",name:"Name",blackList:[...]}]
+// email receiver
+// output [[{email:"email",name:"name"},{email:"email",name:"name"}]]
+function santaAlgorithm(participantsList) {
+   /*  Object.keys(participantsList).forEach((key) => {
+        participantsList[key].push(key)
+    })*/
+    const emails =  participantsList.map((participant) => {
+        const email = Object.keys(participant)[0]
+        return email;
+    })//Object.keys(participantsList)
     const extracted = []
-    const result =  emails.map((email) => {
-        const receiver = getElementRandomFromArray(emails,blackList[email],extracted)
-        if(receiver != null) {
-            console.log("sto per aggiungere un reciver",receiver);
-            extracted.push(receiver)
+    const result =  participantsList.map((participant) => {
+        const blackList = participant["blackList"];
+        const receiverEmail = getElementRandomFromArray(emails,blackList,extracted)
+        if(receiverEmail != null) {
+            extracted.push(receiverEmail)
         }
-        return [email,receiver]
+        const recevierObj = participantsList.find((participant) => (participant.email === receiverEmail))
+        console.log(recevierObj);
+        return [{email:participant["email"],name:participant["name"]}, {email:recevierObj["email"],name:recevierObj["name"]}]
     })
     return result;
 }
 
-/*function getWhiteList(emails,blackList) {
-    const result =  Object.keys(blackList).map((key) => {
-        console.log(key);
-        const difference=emails.filter(x => !blackList[key].includes(x));
-        return {
-            key:difference
-        }
-    })
-   return result;
-}*/
-
 function getElementRandomFromArray(emails ,not_toExtract,extracted) {
-
-    // estrarre da emails un elemento non presente in not_toExtract, extracted
-    console.log("gia estratti dentro la funzione",extracted);
-    console.log("notToExtract",not_toExtract);
     const arrayToPickRandom=emails.filter(x => ![...not_toExtract,...extracted].includes(x));
-    console.log("lista da scorrere ovvero differenza ",arrayToPickRandom);
     const item = arrayToPickRandom[Math.floor(Math.random()*arrayToPickRandom.length)];
-    console.log("elemento estratto",item);
     return item;
-
 }
 
-const result =santaAlgorithm(
-    {a:[],b:[], c:[]}
-    )
+function checkSolution(result) {
+    let solutionRight = true;
+    for (const element of result){
+        solutionRight = solutionRight && element[0] != null && element[1] != null
+    }
+    return solutionRight;
+}
 
-console.log(result);
-
-/*const getRandNotInList = (n, list) => {
-    const picks = [];
-    const getPickable = () => {
-        var i = 0;
-        dir = Math.sign(n);
-        list = new Set(list);
-        while (i !== n) {
-            !list.has(i) && picks.push(i);
-            i += dir;
+async function sendEmailToAll(blackList){
+    const result = santaAlgorithm(blackList)
+    const check = checkSolution(result);
+    console.log(result);
+    console.log(check);
+    if(check) {
+        for (const sendTo of result) {
+            try {
+                await sendEmail(sendTo);
+            }
+            catch (error) {
+                console.log(error);
+            }
         }
+        console.log("Email inviate con successo");
     }
-    n = Math.floor(n);
-    if (n === 0) {
-        return list.includes(0) ? undefined : 0
+    else {
+        console.log("problemi con invio email");
     }
-    getPickable();
-    return picks[Math.random() * picks.length | 0]; // (| 0) same as Math.floorK
-}        */// (only for positive ints).
+}
+
+async function main() {
+   await sendEmailToAll( [{email:"email",name:"Name",blackList:[]},{email:"email2",name:"Name",blackList:[]},{email:"email3",name:"Name",blackList:[]}]).then()
+}
+
+main().catch(console.error)
+
+/*const result =santaAlgorithm({a:[],b:[], c:[]})
+const check = checkSolution(result)*/
+
+
