@@ -8,9 +8,10 @@ function santaAlgorithm(participantsList) {
         participantsList[key].push(key)
     })*/
     const emails =  participantsList.map((participant) => {
-        const email = Object.keys(participant)[0]
+        const email = participant["email"]
         return email;
     })//Object.keys(participantsList)
+    console.log(emails);
     const extracted = []
     const result =  participantsList.map((participant) => {
         const blackList = participant["blackList"];
