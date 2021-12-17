@@ -3,15 +3,15 @@ const {sendEmail} = require("./sendEmail");
 // input [{email:"email",name:"Name",blackList:[...]}]
 // email receiver
 // output [[{email:"email",name:"name"},{email:"email",name:"name"}]]
-function santaAlgorithm(participantsList) {
-   /*  Object.keys(participantsList).forEach((key) => {
-        participantsList[key].push(key)
-    })*/
-    const emails =  participantsList.map((participant) => {
+function santaAlgorithm(list) {
+
+    const participantsList = addSelfInBlockList(list)
+    let emails =  participantsList.map((participant) => {
         const email = participant["email"]
         return email;
     })//Object.keys(participantsList)
-    console.log(emails);
+    emails = shuffle(emails)
+    ;
     const extracted = []
     const result =  participantsList.map((participant) => {
         const blackList = participant["blackList"];
@@ -20,10 +20,17 @@ function santaAlgorithm(participantsList) {
             extracted.push(receiverEmail)
         }
         const recevierObj = participantsList.find((participant) => (participant.email === receiverEmail))
-        console.log(recevierObj);
         return [{email:participant["email"],name:participant["name"]}, {email:recevierObj["email"],name:recevierObj["name"]}]
     })
     return result;
+}
+
+function  addSelfInBlockList(list) {
+    const newList = list
+    for (const participant of newList ) {
+        participant["blackList"].push(participant["email"])
+    }
+    return newList
 }
 
 function getElementRandomFromArray(emails ,not_toExtract,extracted) {
@@ -38,6 +45,24 @@ function checkSolution(result) {
         solutionRight = solutionRight && element[0] != null && element[1] != null
     }
     return solutionRight;
+}
+
+function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+
+    // While there remain elements to shuffle...
+    while (currentIndex != 0) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
 }
 
 async function sendEmailToAll(blackList){
@@ -62,7 +87,17 @@ async function sendEmailToAll(blackList){
 }
 
 async function main() {
-   await sendEmailToAll( [{email:"email",name:"Name",blackList:[]},{email:"email2",name:"Name",blackList:[]},{email:"email3",name:"Name",blackList:[]}]).then()
+   await sendEmailToAll( [
+       {email:"victorcarrilh94@gmail.com",name:"Victor Carrilho",blackList:["elisabettab129@gmail.com"]},
+       {email:"Xxdragone96xx@live.it",name:"Daniele Venditti",blackList:[]},
+       {email:"cambone.alessandro@gmail.com",name:"Alessandro Cambone",blackList:[]},
+       {email:"elisabettab129@gmail.com",name:"Elisabetta Boldrini",blackList:["victorcarrilh94@gmail.com"]},
+       {email:"dipaoloemanuele@virgilio.it",name:"Emanuele Di Paolo",blackList:[]},
+       {email:"saraosmelli@yahoo.com",name:"Sara Osmelli",blackList:["utentedocappunti@yahoo.com"]},
+       {email:"utentedocappunti@yahoo.com",name:"Daniele Furii",blackList:["saraosmelli@yahoo.com"]},
+       {email:"chiaracarrozzino@hotmail.it",name:"Chiara Carrozzino",blackList:[]},
+       ]
+   )
 }
 
 main().catch(console.error)

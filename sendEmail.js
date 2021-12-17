@@ -11,22 +11,28 @@ async function sendEmail(sendTo) {
 
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false, // true for 465, false for other ports
+        service: 'gmail',
         auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass, // generated ethereal password
-        },
+            type: 'OAuth2',
+            user: process.env.MAIL_USERNAME,
+            pass: process.env.MAIL_PASSWORD,
+            clientId: process.env.OAUTH_CLIENTID,
+            clientSecret: process.env.OAUTH_CLIENT_SECRET,
+            refreshToken: process.env.OAUTH_REFRESH_TOKEN
+        }
     });
-
     // send mail with defined transport object
     let info = await transporter.sendMail({
-        from: '"Babbo natale segreto 👻" <babbosecredo@gmail.com>', // sender address
-        to: sendTo[0].email, // list of receivers
+        from: '"Babbo natale segreto 👻" <babbonatale@gmail.com>', // sender address, // sender address
+        to: `${sendTo[0].email}`, // list of receivers
         subject: "ASSEGNAZIONE BABBO NATALE SEGRETO", // Subject line
-        text: sendTo[1].name, // plain text body
-     //   html: "<b>Hello world?</b>", // html body
+        text: "hello", // plain text body
+        html: `<b>DEVI FAJE N'BER REGALO A ${sendTo[1].name}</b>`, // html body*/
+       /*
+         // list of receivers
+        subject: "ASSEGNAZIONE BABBO NATALE SEGRETO", // Subject line
+        text: "hello", // plain text body
+        html: `<b>${sendTo[1].name}</b>`, // html body*/
     });
 
     console.log("Message sent: %s", info.messageId);
