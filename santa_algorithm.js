@@ -1,15 +1,14 @@
 require('dotenv').config()
 const {sendEmail} = require("./sendEmail");
-// input [{email:"email",name:"Name",blackList:[...]}]
-// email receiver
-// output [[{email:"email",name:"name"},{email:"email",name:"name"}]]
+const {input_participants} = require("./config");
+
 function santaAlgorithm(list) {
 
     const participantsList = addSelfInBlockList(list)
     let emails =  participantsList.map((participant) => {
         const email = participant["email"]
         return email;
-    })//Object.keys(participantsList)
+    })
     emails = shuffle(emails)
     ;
     const extracted = []
@@ -50,14 +49,9 @@ function checkSolution(result,participantsNumber) {
 function shuffle(array) {
     let currentIndex = array.length,  randomIndex;
 
-    // While there remain elements to shuffle...
     while (currentIndex != 0) {
-
-        // Pick a remaining element...
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
-
-        // And swap it with the current element.
         [array[currentIndex], array[randomIndex]] = [
             array[randomIndex], array[currentIndex]];
     }
@@ -68,7 +62,6 @@ function shuffle(array) {
 async function sendEmailToAll(blackList){
     const result = santaAlgorithm(blackList)
     const check = checkSolution(result,blackList.length);
-    //console.log(result);
     console.log(result.length)
     console.log(check);
     if(check) {
@@ -80,30 +73,18 @@ async function sendEmailToAll(blackList){
                 console.log(error);
             }
         }
-        console.log("Email inviate con successo");
+        console.log("Email sent successfully");
     }
     else {
-        console.log("problemi con invio email");
+        console.log("Problems with sending of the emails");
     }
 }
 
 async function main() {
-   await sendEmailToAll( [
-       {email:"victorcarrilho94@hotmail.it",name:"Victor Carrilho",blackList:["elisabettab129@gmail.com"]},
-       {email:"Xxdragone96xx@live.it",name:"Daniele Venditti",blackList:[]},
-       {email:"cambone.alessandro@gmail.com",name:"Alessandro Cambone",blackList:[]},
-       {email:"elisabettab129@gmail.com",name:"Elisabetta Boldrini",blackList:["victorcarrilho94@hotmail.it"]},
-       {email:"dipaoloemanuele@virgilio.it",name:"Emanuele Di Paolo",blackList:[]},
-       {email:"saraosmelli@yahoo.com",name:"Sara Osmelli",blackList:["utentedocappunti@yahoo.com"]},
-       {email:"utentedocappunti@yahoo.com",name:"Daniele Furii",blackList:["saraosmelli@yahoo.com"]},
-       {email:"chiaracarrozzino@hotmail.it",name:"Chiara Carrozzino",blackList:[]},
-       ]
-   )
+   await sendEmailToAll(input_participants)
 }
 
 main().catch(console.error)
 
-/*const result =santaAlgorithm({a:[],b:[], c:[]})
-const check = checkSolution(result)*/
 
 
