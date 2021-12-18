@@ -1,5 +1,5 @@
+require('dotenv').config()
 const {sendEmail} = require("./sendEmail");
-
 // input [{email:"email",name:"Name",blackList:[...]}]
 // email receiver
 // output [[{email:"email",name:"name"},{email:"email",name:"name"}]]
@@ -39,12 +39,12 @@ function getElementRandomFromArray(emails ,not_toExtract,extracted) {
     return item;
 }
 
-function checkSolution(result) {
+function checkSolution(result,participantsNumber) {
     let solutionRight = true;
     for (const element of result){
         solutionRight = solutionRight && element[0] != null && element[1] != null
     }
-    return solutionRight;
+    return solutionRight && result.length === participantsNumber;
 }
 
 function shuffle(array) {
@@ -67,8 +67,9 @@ function shuffle(array) {
 
 async function sendEmailToAll(blackList){
     const result = santaAlgorithm(blackList)
-    const check = checkSolution(result);
-    console.log(result);
+    const check = checkSolution(result,blackList.length);
+    //console.log(result);
+    console.log(result.length)
     console.log(check);
     if(check) {
         for (const sendTo of result) {
@@ -88,10 +89,10 @@ async function sendEmailToAll(blackList){
 
 async function main() {
    await sendEmailToAll( [
-       {email:"victorcarrilh94@gmail.com",name:"Victor Carrilho",blackList:["elisabettab129@gmail.com"]},
+       {email:"victorcarrilho94@hotmail.it",name:"Victor Carrilho",blackList:["elisabettab129@gmail.com"]},
        {email:"Xxdragone96xx@live.it",name:"Daniele Venditti",blackList:[]},
        {email:"cambone.alessandro@gmail.com",name:"Alessandro Cambone",blackList:[]},
-       {email:"elisabettab129@gmail.com",name:"Elisabetta Boldrini",blackList:["victorcarrilh94@gmail.com"]},
+       {email:"elisabettab129@gmail.com",name:"Elisabetta Boldrini",blackList:["victorcarrilho94@hotmail.it"]},
        {email:"dipaoloemanuele@virgilio.it",name:"Emanuele Di Paolo",blackList:[]},
        {email:"saraosmelli@yahoo.com",name:"Sara Osmelli",blackList:["utentedocappunti@yahoo.com"]},
        {email:"utentedocappunti@yahoo.com",name:"Daniele Furii",blackList:["saraosmelli@yahoo.com"]},
